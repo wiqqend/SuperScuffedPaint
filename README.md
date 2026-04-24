@@ -26,7 +26,7 @@ The target user is anyone who wants to have a little more creativity in their li
 
 ### If Statements & Loops
 
-**Usage**: Check which tool is active; loop through pixels to fill areas.
+**Usage**: Check which tool is active; loop through pixels to fill areas. For loops are to be used for Light vs Dark mode switching.
 
 ```
 IF currentTool == 'pen' THEN
@@ -35,10 +35,9 @@ ELSE IF currentTool == 'circle' THEN
   draw circle
 END IF
 
-FOR each pixel in connected area DO
-  change pixel color to fill color
-END FOR
-```
+For each element in menu
+    invert color 
+``` 
 
 ### Event Listeners
 
