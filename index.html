@@ -12,35 +12,41 @@
     <fieldset>
         <fieldset>
             <legend>Drawing</legend>
-            <input id="pencil-color" type="color" id="picker">
-            <button id="pencil">Pencil</button>
-            <input id="pencil-size" type="number" value="5" min="1" max="50" placeholder="px">
-            <button id="eraser">Eraser</button>
-            <button id="fill">Fill</button>
+            <input class="form-control" id="pencil-color" type="color" id="picker">
+            <button class="tool-btn" data-tool="pencil">Pen</button>
+            <input class="form-control" id="pencil-size" type="number" value="5" min="1" max="50" placeholder="px">
+            <button class="tool-btn" data-tool="eraser">Eraser</button>
+            <button class="tool-btn" data-tool="fill">Fill</button>
         </fieldset>
         <fieldset>
             <legend>Shapes</legend>
-            <button id="line">Line</button>
-            <button id="rectangle">Rectangle</button>
-            <button id="circle">Circle</button>
+            <button class="tool-btn" data-tool="line">Line</button>
+            <button class="tool-btn" data-tool="rectangle">Rectangle</button>
+            <button class="tool-btn" data-tool="circle">Circle</button>
         </fieldset>
         <fieldset>
             <legend>Canvas</legend>
-            <button id="reset">Reset</button>
+            <button class="tool-btn" data-tool="reset">Reset</button>
+            <input class="form-control" type="number" id="canvas-width" value="800" min="100" max="2560" placeholder="Width">
+            <input class="form-control" type="number" id="canvas-height" value="500" min="100" max="1440" placeholder="Height">
+            <button class="tool-btn" data-tool="resize" id="btn-resize">Resize</button>
         </fieldset>
         <fieldset>
             <legend>Files</legend>
-            <button id="reset">Save As</button>
-            <button id="save">Save</button>
-            <button id="load">Load</button>
+            <button class="tool-btn" data-tool="save-as">Save As</button>
+            <button class="tool-btn" data-tool="save">Save</button>
+            <button class="tool-btn" data-tool="load">Load</button>
         </fieldset>
-        <p>
-            x: <span id="x-coord">0</span> y: <span id="y-coord">0</span> <br>
-            Tool: <span id="current-tool"></span>
-        </p>
+        <div id="statusbar">
+            <span id="status-tool">Tool: Pen</span><br> 
+            <span id="status-coords">X: 0, Y: 0</span><br>
+            <span id="status-size">Size: 5px</span><br>
+        </div>
     </fieldset>
-        <canvas id="canvas" width="800" height="500"></canvas>
-
+    </div>
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+        <canvas id="preview-canvas"></canvas>
     </div>
     <script src="script.js"></script>
 </body>

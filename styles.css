@@ -1,6 +1,6 @@
 #canvas {
     border: 3px solid black;
-    display: flex;
+    cursor: crosshair;
 }
 
 .layout {
@@ -27,4 +27,3 @@ fieldset {
     background-color: slategrey;
     color : white;
 }
-
