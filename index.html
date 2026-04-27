@@ -7,11 +7,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <canvas id="canvas" width="800" height="500"></canvas>
-    <script src="script.js" defer></script>
-
+    <h1>Super Scuffed Paint</h1>
+    <div class="layout">
     <fieldset>
-        <legend>Tools</legend>
         <fieldset>
             <legend>Drawing</legend>
             <input id="pencil-color" type="color" id="picker">
@@ -26,6 +24,24 @@
             <button id="rectangle">Rectangle</button>
             <button id="circle">Circle</button>
         </fieldset>
+        <fieldset>
+            <legend>Canvas</legend>
+            <button id="reset">Reset</button>
+        </fieldset>
+        <fieldset>
+            <legend>Files</legend>
+            <button id="reset">Save As</button>
+            <button id="save">Save</button>
+            <button id="load">Load</button>
+        </fieldset>
+        <p>
+            x: <span id="x-coord">0</span> y: <span id="y-coord">0</span> <br>
+            Tool: <span id="current-tool"></span>
+        </p>
     </fieldset>
+        <canvas id="canvas" width="800" height="500"></canvas>
+
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>

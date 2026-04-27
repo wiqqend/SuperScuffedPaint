@@ -1,3 +1,30 @@
 #canvas {
     border: 3px solid black;
+    display: flex;
 }
+
+.layout {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3em;
+    color: midnightblue;
+    display: block;
+}
+
+fieldset {
+    display: flex;
+    vertical-align: top;
+    margin: 5px;
+    padding: 5px;
+    border: 2px solid rgb(255, 255, 255);
+    border-radius: 10px;
+    background-color: slategrey;
+    color : white;
+}
+
