@@ -61,8 +61,14 @@ ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 });
 
-
-
+canvas.addEventListener('mousedown', (e) => {
+isDrawing = true;
+startX = e.offsetX;
+startY = e.offsetY;
+});
+canvas.addEventListener('mouseup' || 'mouseleave' || 'mouseout', () => {
+isDrawing = false;
+});
 
 function updateStatus() {
 const toolName = currentTool.charAt(0).toUpperCase() + currentTool.slice(1);
