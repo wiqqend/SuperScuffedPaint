@@ -50,14 +50,16 @@ canvas.height = newH;
 preview.width = newW;
 preview.height = newH;
 
-
 ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, newW, newH);
 ctx.putImageData(snapshot, 0, 0);
 
 });
 
-
+document.getElementById('reset-canvas').addEventListener('click', () => {
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+});
 
 
 
