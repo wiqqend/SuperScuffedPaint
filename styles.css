@@ -27,3 +27,7 @@ fieldset {
     background-color: slategrey;
     color : white;
 }
+body {
+    background-color: lightsteelblue;
+    font-family:'Trebuchet MS';
+}

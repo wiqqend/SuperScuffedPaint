@@ -25,6 +25,20 @@ const statusSize = document.getElementById('status-size');
 
 const toolButtons = document.querySelectorAll('.tool-btn[data-tool]');
 
+toolButtons.forEach(btn => {
+btn.addEventListener('click', () => {
+currentTool = btn.dataset.tool;
+toolButtons.forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+updateStatus();
+});
+});
+
+brushSize.addEventListener('input', () => {
+sizeLabel.textContent = brushSize.value;
+updateStatus();
+});
+
 document.getElementById('btn-resize').addEventListener('click', () => {
 const newW = parseInt(document.getElementById('canvas-width').value);
 const newH = parseInt(document.getElementById('canvas-height').value);
@@ -41,3 +55,15 @@ ctx.fillRect(0, 0, newW, newH);
 ctx.putImageData(snapshot, 0, 0);
 
 });
+
+
+
+
+
+
+function updateStatus() {
+const toolName = currentTool.charAt(0).toUpperCase() + currentTool.slice(1);
+statusTool.textContent = `Tool: ${toolName}`;
+statusSize.textContent = `Size: ${brushSize.value}px`;}
+
+updateStatus();
