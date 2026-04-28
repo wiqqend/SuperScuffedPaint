@@ -110,6 +110,7 @@ link.click();
 
 
 
+
 function updateStatus() {
 const toolName = currentTool.toUpperCase();
 statusTool.textContent = `Tool: ${toolName}`;
