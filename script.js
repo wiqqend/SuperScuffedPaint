@@ -62,13 +62,23 @@ ctx.fillRect(0, 0, canvas.width, canvas.height);
 });
 
 canvas.addEventListener('mousedown', (e) => {
-isDrawing = true;
-startX = e.offsetX;
-startY = e.offsetY;
+    isDrawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY]; // Start coordinates
 });
-canvas.addEventListener('mouseup' || 'mouseleave' || 'mouseout', () => {
-isDrawing = false;
-});
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', () => isDrawing = false);
+function draw(e) {
+    if (!isDrawing) return; // Stop the function if mouse is not down
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY); // Move to starting point
+    ctx.lineTo(e.offsetX, e.offsetY); // Create line to new point
+    ctx.stroke(); // Actually draw the line
+    ctx.lineWidth = brushSize.value;
+    ctx.strokeStyle = brushColor.value;
+    ctx.lineCap = 'round';
+    ctx.fillStyle = brushColor.value;
+    [lastX, lastY] = [e.offsetX, e.offsetY]; // Update previous coordinates
+}
 
 function updateStatus() {
 const toolName = currentTool.charAt(0).toUpperCase() + currentTool.slice(1);
