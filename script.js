@@ -80,6 +80,7 @@ function draw(e) {
         ctx.lineTo(e.offsetX, e.offsetY);
         ctx.stroke();
         [lastX, lastY] = [e.offsetX, e.offsetY];
+        statusCoords.textContent = `X: ${lastX}, Y: ${lastY}`;
         return; 
     }
     if (currentTool === 'pen') {
@@ -92,6 +93,9 @@ function draw(e) {
         ctx.lineTo(e.offsetX, e.offsetY); //create line to new point
         ctx.stroke(); // draw the line
         [lastX, lastY] = [e.offsetX, e.offsetY]; // update previous 
+
+        statusCoords.textContent = `X: ${lastX}, Y: ${lastY}`;
+
         return
     }
 }
