@@ -16,9 +16,9 @@ let isDrawing = false;
 let startX = 0;
 let startY = 0;
 
-const brushColor = document.getElementById('pencil-color');
-const brushSize = document.getElementById('pencil-size');
-const sizeLabel = document.getElementById('pencil-size');
+const brushColor = document.getElementById('pen-color');
+const brushSize = document.getElementById('pen-size');
+const sizeLabel = document.getElementById('pen-size');
 const statusTool = document.getElementById('status-tool');
 const statusCoords = document.getElementById('status-coords');
 const statusSize = document.getElementById('status-size');
@@ -67,21 +67,37 @@ canvas.addEventListener('mousedown', (e) => {
 });
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', () => isDrawing = false);
+canvas.addEventListener('mouseleave', () => isDrawing = false);
 function draw(e) {
-    if (!isDrawing) return; // Stop the function if mouse is not down
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY); // Move to starting point
-    ctx.lineTo(e.offsetX, e.offsetY); // Create line to new point
-    ctx.stroke(); // Actually draw the line
-    ctx.lineWidth = brushSize.value;
-    ctx.strokeStyle = brushColor.value;
-    ctx.lineCap = 'round';
-    ctx.fillStyle = brushColor.value;
-    [lastX, lastY] = [e.offsetX, e.offsetY]; // Update previous coordinates
+    if (!isDrawing) return; 
+    if (currentTool === 'eraser') {
+        ctx.lineWidth = brushSize.value * 1.25; 
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineCap = 'round';
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY); 
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+        return; 
+    }
+    if (currentTool === 'pen') {
+        ctx.lineWidth = brushSize.value;
+        ctx.strokeStyle = brushColor.value;
+        ctx.lineCap = 'round';
+        ctx.fillStyle = brushColor.value;
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY); // move to starting point
+        ctx.lineTo(e.offsetX, e.offsetY); //create line to new point
+        ctx.stroke(); // draw the line
+        [lastX, lastY] = [e.offsetX, e.offsetY]; // update previous 
+        return
+    }
 }
 
 function updateStatus() {
-const toolName = currentTool.charAt(0).toUpperCase() + currentTool.slice(1);
+const toolName = currentTool.toUpperCase();
 statusTool.textContent = `Tool: ${toolName}`;
 statusSize.textContent = `Size: ${brushSize.value}px`;}
 
