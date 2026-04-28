@@ -100,6 +100,16 @@ function draw(e) {
     }
 }
 
+document.getElementById('btn-save-as').addEventListener('click', () => {
+const link = document.createElement('a');
+link.download = 'ssp-drawing.png';
+link.href = canvas.toDataURL('image/png');
+link.click();
+});
+
+
+
+
 function updateStatus() {
 const toolName = currentTool.toUpperCase();
 statusTool.textContent = `Tool: ${toolName}`;
