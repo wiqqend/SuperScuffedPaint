@@ -108,6 +108,31 @@ link.click();
 });
 
 
+document.getElementById('btn-load').addEventListener('click', () => {
+const input = document.createElement('input');
+input.type = 'file';
+input.accept = 'image/*';
+input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) 
+        return;  
+    const reader = new FileReader();
+    reader.onload = (event) => {
+    const img = new Image();
+    img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    });
+input.click();
+currentTool = 'pen';
+updateStatus();
+});
+
 
 
 
