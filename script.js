@@ -1,12 +1,9 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const preview = document.getElementById('preview-canvas');
-const pctx = preview.getContext('2d');
+
 
 canvas.width = 800;
 canvas.height = 500;
-preview.width = 800;
-preview.height = 500;
 
 ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -47,8 +44,6 @@ const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
 canvas.width = newW;
 canvas.height = newH;
-preview.width = newW;
-preview.height = newH;
 
 ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, newW, newH);
@@ -133,8 +128,23 @@ currentTool = 'pen';
 updateStatus();
 });
 
+document.addEventListener('btn-save').addEventListener('click', () => {
+const canvasData = canvas.toDataURL('image/png');
+localStorage.setItem('savedCanvas', canvasData);
+});
 
+const savedCanvas = localStorage.getItem('savedCanvas');
 
+window.addEventListener('load', (event) => {
+    if (savedCanvas) {
+    const img = new Image();
+    img.src = savedCanvas;
+    img.onload = () => {
+        ctx.drawImage(img, 0, 0);
+    };
+}
+
+});
 
 function updateStatus() {
 const toolName = currentTool.toUpperCase();
