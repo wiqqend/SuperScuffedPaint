@@ -1,8 +1,13 @@
 #canvas {
     border: 3px solid black;
     cursor: crosshair;
+    
 }
-
+#canvas-container {
+    display: flex;
+    justify-content: center;
+    
+}
 .layout {
     display: flex;
     justify-content: center;

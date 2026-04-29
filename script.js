@@ -127,28 +127,27 @@ input.click();
 currentTool = 'pen';
 updateStatus();
 });
-
-document.addEventListener('btn-save').addEventListener('click', () => {
-const canvasData = canvas.toDataURL('image/png');
-localStorage.setItem('savedCanvas', canvasData);
-});
-
-const savedCanvas = localStorage.getItem('savedCanvas');
-
-window.addEventListener('load', (event) => {
-    if (savedCanvas) {
-    const img = new Image();
-    img.src = savedCanvas;
-    img.onload = () => {
-        ctx.drawImage(img, 0, 0);
-    };
+document.getElementById('btn-save').addEventListener('click', saveCanvas);
+function saveCanvas() {
+    localStorage.setItem("myCanvas", canvas.toDataURL());
+    currentTool = 'pen';
 }
 
-});
+function loadCanvas() {
+    const dataURL = localStorage.getItem("myCanvas");
+    const img = new Image();
+    img.src = dataURL;
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+    };
+    updateStatus();
+}
+
 
 function updateStatus() {
 const toolName = currentTool.toUpperCase();
 statusTool.textContent = `Tool: ${toolName}`;
 statusSize.textContent = `Size: ${brushSize.value}px`;}
 
+loadCanvas();
 updateStatus();
