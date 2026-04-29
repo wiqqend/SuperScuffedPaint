@@ -8,7 +8,6 @@ canvas.height = 500;
 ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-let currentTool = 'pen';
 let isDrawing = false;
 let startX = 0;
 let startY = 0;
@@ -21,13 +20,38 @@ const statusCoords = document.getElementById('status-coords');
 const statusSize = document.getElementById('status-size');
 
 const toolButtons = document.querySelectorAll('.tool-btn[data-tool]');
+document.getElementById('btn-save').addEventListener('click', () => {
+    localStorage.setItem("currentTool", JSON.stringify(currentTool));
 
+});
+
+const CT = JSON.parse(localStorage.getItem("currentTool"));
+currentTool = CT
+window.addEventListener('load', () => {
+    currentTool = CT 
+    updateStatus();
+});
 toolButtons.forEach(btn => {
 btn.addEventListener('click', () => {
-currentTool = btn.dataset.tool;
-toolButtons.forEach(b => b.classList.remove('active'));
-btn.classList.add('active');
-updateStatus();
+    if (btn.dataset.tool === 'save') {
+        return;
+    }
+    if (btn.dataset.tool === 'load') {
+        return;
+    }
+    if (btn.dataset.tool === 'resize') {
+        return;
+    }
+    if (btn.dataset.tool === 'reset') {
+        return;
+    }
+    if (btn.dataset.tool === 'save-as') {
+        return;
+    }   
+    currentTool = btn.dataset.tool;
+    toolButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    updateStatus();
 });
 });
 
@@ -124,13 +148,12 @@ input.addEventListener('change', (e) => {
 
     });
 input.click();
-currentTool = 'pen';
+currentTool = btn.dataset.tool;
 updateStatus();
 });
 document.getElementById('btn-save').addEventListener('click', saveCanvas);
 function saveCanvas() {
     localStorage.setItem("myCanvas", canvas.toDataURL());
-    currentTool = 'pen';
 }
 
 function loadCanvas() {
@@ -140,7 +163,9 @@ function loadCanvas() {
     img.onload = function() {
         ctx.drawImage(img, 0, 0);
     };
+    currentTool = btn.dataset.tool;    
     updateStatus();
+    
 }
 
 
@@ -148,6 +173,9 @@ function updateStatus() {
 const toolName = currentTool.toUpperCase();
 statusTool.textContent = `Tool: ${toolName}`;
 statusSize.textContent = `Size: ${brushSize.value}px`;}
+
+
+
 
 loadCanvas();
 updateStatus();
