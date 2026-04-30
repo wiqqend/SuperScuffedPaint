@@ -20,17 +20,13 @@ const statusCoords = document.getElementById('status-coords');
 const statusSize = document.getElementById('status-size');
 
 const toolButtons = document.querySelectorAll('.tool-btn[data-tool]');
-document.getElementById('btn-save').addEventListener('click', () => {
-    localStorage.setItem("currentTool", JSON.stringify(currentTool));
-
-});
-
 const CT = JSON.parse(localStorage.getItem("currentTool"));
-currentTool = CT
 window.addEventListener('load', () => {
     currentTool = CT 
     updateStatus();
 });
+
+
 toolButtons.forEach(btn => {
 btn.addEventListener('click', () => {
     if (btn.dataset.tool === 'save') {
@@ -88,6 +84,9 @@ canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', () => isDrawing = false);
 canvas.addEventListener('mouseleave', () => isDrawing = false);
 function draw(e) {
+    if (brushSize.value < 1) {
+        return;
+    }
     if (!isDrawing) return; 
     if (currentTool === 'eraser') {
         ctx.lineWidth = brushSize.value * 1.25; 
@@ -151,10 +150,14 @@ input.click();
 currentTool = btn.dataset.tool;
 updateStatus();
 });
-document.getElementById('btn-save').addEventListener('click', saveCanvas);
-function saveCanvas() {
+
+document.getElementById('btn-save').addEventListener('click', () => {
+    localStorage.setItem("currentTool", JSON.stringify(currentTool))
     localStorage.setItem("myCanvas", canvas.toDataURL());
-}
+    localStorage.setItem("brushSize", brushSize.value);
+    localStorage.setItem("brushColor", brushColor.value);
+});
+
 
 function loadCanvas() {
     const dataURL = localStorage.getItem("myCanvas");
@@ -163,7 +166,11 @@ function loadCanvas() {
     img.onload = function() {
         ctx.drawImage(img, 0, 0);
     };
-    currentTool = btn.dataset.tool;    
+    currentTool = localStorage.getItem("currentTool");
+    if (brushSize.value == null) {
+        brushSize.value = 5;
+    } else {brushSize.value = localStorage.getItem("brushSize");}
+    brushColor.value = localStorage.getItem("brushColor");
     updateStatus();
     
 }
