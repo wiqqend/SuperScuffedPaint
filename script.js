@@ -191,6 +191,14 @@ function loadCanvas() {
     
 }
 
+function fillBucket(image, startX, startY, newColor) {
+    
+
+
+
+
+}
+
 function updateStatus() {
 const toolName = currentTool.toUpperCase();
 statusTool.textContent = `Tool: ${toolName}`;
