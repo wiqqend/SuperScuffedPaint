@@ -90,6 +90,11 @@ function draw(e) {
         return;
     }
     if (!isDrawing) return; 
+
+    if (currentTool === 'fill'){
+        newColor = brushColor
+        fillBucket(ctx.imageData(),startX,startY,newColor)
+        }
     if (currentTool === 'eraser') {
         ctx.lineWidth = brushSize.value * 1.25; 
         ctx.strokeStyle = '#ffffff';
@@ -192,11 +197,37 @@ function loadCanvas() {
 }
 
 function fillBucket(image, startX, startY, newColor) {
-    
+    const rowPx = canvas.width;
+    const colPx = canvas.height;
+    oldColor = ctx.getImageData(startX, startY, 1, 1).data;
+    if (oldColor === newColor) {
+        return; 
+    }
 
+    queue = [[]];
+    queue[0] = [startX, startY];
 
+    imageData = ctx.getImageData(0, 0, rowPx, colPx);
+    imageData[startX][startY] = newColor;
 
+    delRow = [-1,1,0,0];
+    delCol = [0,0,-1,1];
 
+    while (queue.length > 0) {
+        currentCell = queue.shift();
+        row = currentCell.row;
+        col = currentCell.col;
+        for (let i = 0; i < 4; i++) {
+            newRow = row + delRow[i];
+            newCol = col + delCol[i];
+
+            if (newRow >0 && newRow < rowPx && newCol > 0 && newCol < colPx && imageData[newRow][newCol] === oldColor) {
+                queue.push([newRow, newCol]);
+                imageData[newRow][newCol] = newColor;
+            }
+        }
+    }
+    ctx.putImageData(imageData, 0, 0);
 }
 
 function updateStatus() {
