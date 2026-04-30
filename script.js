@@ -76,6 +76,8 @@ ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 });
 
+
+
 canvas.addEventListener('mousedown', (e) => {
     isDrawing = true;
     [lastX, lastY] = [e.offsetX, e.offsetY]; // Start coordinates
@@ -118,13 +120,15 @@ function draw(e) {
     }
 }
 
+
+
+
 document.getElementById('btn-save-as').addEventListener('click', () => {
 const link = document.createElement('a');
 link.download = 'ssp-drawing.png';
 link.href = canvas.toDataURL('image/png');
 link.click();
 });
-
 
 document.getElementById('btn-load').addEventListener('click', () => {
 const input = document.createElement('input');
@@ -156,7 +160,12 @@ document.getElementById('btn-save').addEventListener('click', () => {
     localStorage.setItem("myCanvas", canvas.toDataURL());
     localStorage.setItem("brushSize", brushSize.value);
     localStorage.setItem("brushColor", brushColor.value);
+    localStorage.setItem("newW", canvas.width);
+    localStorage.setItem("newH", canvas.height);
 });
+
+
+
 
 
 function loadCanvas() {
@@ -172,9 +181,15 @@ function loadCanvas() {
     } else {brushSize.value = localStorage.getItem("brushSize");}
     brushColor.value = localStorage.getItem("brushColor");
     updateStatus();
+    newW = localStorage.getItem("newW");
+    newH = localStorage.getItem("newH");
+    canvas.width = newW;
+    canvas.height = newH;
+
+    document.getElementById('canvas-width').value = newW;
+    document.getElementById('canvas-height').value = newH;
     
 }
-
 
 function updateStatus() {
 const toolName = currentTool.toUpperCase();
