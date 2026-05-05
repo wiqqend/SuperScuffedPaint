@@ -265,7 +265,21 @@ function fillBucket(startX, startY, newColor) {
     const rowPx = canvas.width;
     const colPx = canvas.height;
     const imageData = ctx.getImageData(0, 0, rowPx, colPx);
+    console.log(imageData, newColor)
     const data = imageData.data;
+
+    const r = parseInt(newColor.slice(1, 3), 16);
+    const g = parseInt(newColor.slice(3, 5), 16);
+    const b = parseInt(newColor.slice(5, 7), 16);
+
+    const idx = (startY * rowPx + startX) * 4;
+    const oldR = data[idx];
+    const oldG = data[idx + 1];
+    const oldB = data[idx + 2];
+    const oldA = data[idx + 3];
+
+        if (oldR === r && oldG === g && oldB === b) 
+            return;
 
     const queue = [[startX, startY]];
     const visited = []
@@ -277,7 +291,14 @@ function fillBucket(startX, startY, newColor) {
         const [cx, cy] = queue.shift();
         const i = (cy * rowPx + cx) * 4;
         
-        data[i] = newColor;
+        if (data[i] !== oldR || data[i + 1] !== oldG || data[i + 2] !== oldB || data[i + 3] !== oldA) 
+            continue;
+
+        data[i] = r;
+        data[i + 1] = g;
+        data[i + 2] = b;
+        data[i + 3] = 255;
+
         for (let d = 0; d < 4; d++) {
             const nx = cx + delCol[d];
             const ny = cy + delRow[d];
