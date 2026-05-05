@@ -98,173 +98,167 @@ function getActiveTool() {
     return null;
 }
 
-toolButtons.forEach(btn => {
-btn.addEventListener('click', () => {
-    if (btn.dataset.tool === 'save') {
-        return;
-    }
-    if (btn.dataset.tool === 'load') {
-        return;
-    }
-    if (btn.dataset.tool === 'resize') {
-        return;
-    }
-    if (btn.dataset.tool === 'reset') {
-        return;
-    }
-    if (btn.dataset.tool === 'save-as') {
-        return;
-    }   
-    currentTool = btn.dataset.tool;
-    toolButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+const statusbar = document.getElementById('statusbar');
+statusbar.innerHTML = '';
+
+const statusItems = ['status-tool', 'status-coords', 'status-size'];
+const statusLabels = ['Tool: PEN', 'X: 0, Y: 0', 'Size: 5px'];
+
+statusItems.forEach((id, index) => {
+    const span = document.createElement('span');
+    span.id = id;
+    span.textContent = statusLabels[index];
+    statusbar.appendChild(span);
+
+    const br = document.createElement('br');
+    statusbar.appendChild(br);
+});
+
+const statusToolEl = document.getElementById('status-tool');
+const statusCoordsEl = document.getElementById('status-coords');
+const statusSizeEl = document.getElementById('status-size');
+
+// 
+// Event Listeners
+//
+
+window.addEventListener('load', () => {
+    const savedTool = JSON.parse(localStorage.getItem('currentTool'));
+    if (savedTool) currentTool = savedTool;
     updateStatus();
 });
+
+toolButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const toolName = btn.dataset.tool;
+
+        if (['save', 'load', 'resize', 'reset', 'save-as'].includes(toolName)) return;
+
+        currentTool = toolName;
+        toolButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateStatus();
+    });
 });
 
 brushSize.addEventListener('input', () => {
-sizeLabel.textContent = brushSize.value;
-updateStatus();
+    updateStatus();
 });
 
 document.getElementById('btn-resize').addEventListener('click', () => {
-const newW = parseInt(document.getElementById('canvas-width').value);
-const newH = parseInt(document.getElementById('canvas-height').value);
+    const newW = parseInt(document.getElementById('canvas-width').value);
+    const newH = parseInt(document.getElementById('canvas-height').value);
 
-const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    canvas.width = newW;
+    canvas.height = newH;
 
-canvas.width = newW;
-canvas.height = newH;
-
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(0, 0, newW, newH);
-ctx.putImageData(snapshot, 0, 0);
-
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, newW, newH);
+    ctx.putImageData(snapshot, 0, 0);
 });
 
+
 document.getElementById('reset-canvas').addEventListener('click', () => {
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 });
 
 
 
 canvas.addEventListener('mousedown', (e) => {
     isDrawing = true;
-    [lastX, lastY] = [e.offsetX, e.offsetY]; // Start coordinates
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+
+    if (currentTool === 'fill') {
+        const activeTool = getActiveTool();
+        activeTool.draw(e);
+    }
 });
+
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', () => isDrawing = false);
 canvas.addEventListener('mouseleave', () => isDrawing = false);
+
+document.getElementById('btn-save-as').addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = 'ssp-drawing.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+});
+document.getElementById('btn-load').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+    input.click();
+});
+
+// Save to localStorage
+document.getElementById('btn-save').addEventListener('click', () => {
+    localStorage.setItem('currentTool', JSON.stringify(currentTool));
+    localStorage.setItem('myCanvas', canvas.toDataURL());
+    localStorage.setItem('brushSize', brushSize.value);
+    localStorage.setItem('brushColor', brushColor.value);
+    localStorage.setItem('newW', canvas.width);
+    localStorage.setItem('newH', canvas.height);
+});
+
 function draw(e) {
-    if (brushSize.value < 1) {
-        return;
-    }
-    if (!isDrawing) return; 
+    if (!isDrawing) return;
+    if (brushSize.value < 1) return;
+    if (currentTool === 'fill') return; // fill is handled on mousedown
 
-    if (currentTool === 'fill'){
-        newColor = brushColor
-        fillBucket(ctx.imageData(),startX,startY,newColor)
-        }
-    if (currentTool === 'eraser') {
-        ctx.lineWidth = brushSize.value * 1.25; 
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineCap = 'round';
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY); 
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-        [lastX, lastY] = [e.offsetX, e.offsetY];
-        statusCoords.textContent = `X: ${lastX}, Y: ${lastY}`;
-        return; 
-    }
-    if (currentTool === 'pen') {
-        ctx.lineWidth = brushSize.value;
-        ctx.strokeStyle = brushColor.value;
-        ctx.lineCap = 'round';
-        ctx.fillStyle = brushColor.value;
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY); // move to starting point
-        ctx.lineTo(e.offsetX, e.offsetY); //create line to new point
-        ctx.stroke(); // draw the line
-        [lastX, lastY] = [e.offsetX, e.offsetY]; // update previous 
-
-        statusCoords.textContent = `X: ${lastX}, Y: ${lastY}`;
-
-        return
+    const activeTool = getActiveTool();
+    if (activeTool) {
+        activeTool.draw(e);
     }
 }
 
 
 
 
-document.getElementById('btn-save-as').addEventListener('click', () => {
-const link = document.createElement('a');
-link.download = 'ssp-drawing.png';
-link.href = canvas.toDataURL('image/png');
-link.click();
-});
-
-document.getElementById('btn-load').addEventListener('click', () => {
-const input = document.createElement('input');
-input.type = 'file';
-input.accept = 'image/*';
-input.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) 
-        return;  
-    const reader = new FileReader();
-    reader.onload = (event) => {
-    const img = new Image();
-    img.onload = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    };
-    img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-
-    });
-input.click();
-currentTool = btn.dataset.tool;
-updateStatus();
-});
-
-document.getElementById('btn-save').addEventListener('click', () => {
-    localStorage.setItem("currentTool", JSON.stringify(currentTool))
-    localStorage.setItem("myCanvas", canvas.toDataURL());
-    localStorage.setItem("brushSize", brushSize.value);
-    localStorage.setItem("brushColor", brushColor.value);
-    localStorage.setItem("newW", canvas.width);
-    localStorage.setItem("newH", canvas.height);
-});
-
-
-
-
-
 function loadCanvas() {
-    const dataURL = localStorage.getItem("myCanvas");
-    const img = new Image();
-    img.src = dataURL;
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0);
-    };
-    currentTool = localStorage.getItem("currentTool");
-    if (brushSize.value == null) {
-        brushSize.value = 5;
-    } else {brushSize.value = localStorage.getItem("brushSize");}
-    brushColor.value = localStorage.getItem("brushColor");
-    updateStatus();
-    newW = localStorage.getItem("newW");
-    newH = localStorage.getItem("newH");
-    canvas.width = newW;
-    canvas.height = newH;
+    const dataURL = localStorage.getItem('myCanvas');
+    if (dataURL) {
+        const img = new Image();
+        img.src = dataURL;
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0);
+        };
+    }
+    const savedTool = localStorage.getItem('currentTool');
+    if (savedTool) currentTool = JSON.parse(savedTool);
 
-    document.getElementById('canvas-width').value = newW;
-    document.getElementById('canvas-height').value = newH;
-    
+    const savedSize = localStorage.getItem('brushSize');
+    brushSize.value = savedSize ? savedSize : 5;
+
+    const savedColor = localStorage.getItem('brushColor');
+    if (savedColor) brushColor.value = savedColor;
+
+    const newW = localStorage.getItem('newW');
+    const newH = localStorage.getItem('newH');
+    if (newW && newH) {
+        canvas.width = newW;
+        canvas.height = newH;
+        document.getElementById('canvas-width').value = newW;
+        document.getElementById('canvas-height').value = newH;
+    }
+
+    updateStatus();
 }
 
 function fillBucket(image, startX, startY, newColor) {
@@ -302,10 +296,10 @@ function fillBucket(image, startX, startY, newColor) {
 }
 
 function updateStatus() {
-const toolName = currentTool.toUpperCase();
-statusTool.textContent = `Tool: ${toolName}`;
-statusSize.textContent = `Size: ${brushSize.value}px`;}
-
+    const toolName = currentTool ? currentTool.toUpperCase() : 'PEN';
+    statusToolEl.textContent = `Tool: ${toolName}`;
+    statusSizeEl.textContent = `Size: ${brushSize.value}px`;
+}
 
 
 
