@@ -19,13 +19,84 @@ const statusTool = document.getElementById('status-tool');
 const statusCoords = document.getElementById('status-coords');
 const statusSize = document.getElementById('status-size');
 
-const toolButtons = document.querySelectorAll('.tool-btn[data-tool]');
-const CT = JSON.parse(localStorage.getItem("currentTool"));
-window.addEventListener('load', () => {
-    currentTool = CT 
-    updateStatus();
-});
+class Tool {
+    constructor(name, color, width) {
+        this.name = name;
+        this.color = color;
+        this.width = width;
+    }
 
+    activate() {
+        ctx.lineWidth = this.width;
+        ctx.strokeStyle = this.color;
+        ctx.lineCap = 'round';
+        ctx.fillStyle = this.color;
+    }
+
+    draw(e) {
+    }
+}
+
+class Pen extends Tool {
+    constructor(color, width) {
+        super('pen', color, width);
+    }
+
+    draw(e) {
+        this.color = brushColor.value;
+        this.width = brushSize.value;
+        this.activate();
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+        statusCoords.textContent = `X: ${lastX}, Y: ${lastY}`;
+    }
+}
+
+class Eraser extends Tool {
+    constructor(width) {
+        super('eraser', '#ffffff', width);
+    }
+
+    draw(e) {
+        this.width = brushSize.value * 1.25;
+        this.activate();
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+        statusCoords.textContent = `X: ${lastX}, Y: ${lastY}`;
+    }
+}
+
+class Fill extends Tool {
+    constructor(color) {
+        super('fill', color, 1);
+    }
+
+    draw(e) {
+        this.color = brushColor.value;
+        fillBucket(e.offsetX, e.offsetY, this.color);
+    }
+}
+
+const tools = {
+    pen: new Pen(brushColor.value, brushSize.value),
+    eraser: new Eraser(brushSize.value),
+    fill: new Fill(brushColor.value),
+};
+let currentTool = 'pen';
+const toolButtons = document.querySelectorAll('.tool-btn[data-tool]');
+
+function getActiveTool() {
+    if (currentTool === 'pen') return tools.pen;
+    if (currentTool === 'eraser') return tools.eraser;
+    if (currentTool === 'fill') return tools.fill;
+    return null;
+}
 
 toolButtons.forEach(btn => {
 btn.addEventListener('click', () => {
