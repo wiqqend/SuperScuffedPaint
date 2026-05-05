@@ -261,43 +261,42 @@ function loadCanvas() {
     updateStatus();
 }
 
-function fillBucket(image, startX, startY, newColor) {
+function fillBucket(startX, startY, newColor) {
     const rowPx = canvas.width;
     const colPx = canvas.height;
-    oldColor = ctx.getImageData(startX, startY, 1, 1).data;
-    if (oldColor === newColor) {
-        return; 
-    }
+    const imageData = ctx.getImageData(0, 0, rowPx, colPx);
+    const data = imageData.data;
 
-    queue = [[]];
-    queue[0] = [startX, startY];
+    const queue = [[startX, startY]];
+    const visited = []
 
-    imageData = ctx.getImageData(0, 0, rowPx, colPx);
-    imageData[startX][startY] = newColor;
-
-    delRow = [-1,1,0,0];
-    delCol = [0,0,-1,1];
-
+    const delRow = [-1, 1, 0, 0];
+    const delCol = [0, 0, -1, 1];
+    
     while (queue.length > 0) {
-        currentCell = queue.shift();
-        row = currentCell.row;
-        col = currentCell.col;
-        for (let i = 0; i < 4; i++) {
-            newRow = row + delRow[i];
-            newCol = col + delCol[i];
-
-            if (newRow >0 && newRow < rowPx && newCol > 0 && newCol < colPx && imageData[newRow][newCol] === oldColor) {
-                queue.push([newRow, newCol]);
-                imageData[newRow][newCol] = newColor;
+        const [cx, cy] = queue.shift();
+        const i = (cy * rowPx + cx) * 4;
+        
+        data[i] = newColor;
+        for (let d = 0; d < 4; d++) {
+            const nx = cx + delCol[d];
+            const ny = cy + delRow[d];
+            const ni = ny * rowPx + nx;
+            if (nx >= 0 && nx < rowPx && ny >= 0 && ny < colPx && !visited[ni]) {
+                visited[ni] = 1;
+                queue.push([nx, ny]);
             }
         }
     }
+
     ctx.putImageData(imageData, 0, 0);
 }
+    
+
 
 function updateStatus() {
     const toolName = currentTool ? currentTool.toUpperCase() : 'PEN';
-    statusToolEl.textContent = `Tool: ${toolName}`;
+    statusToolEl.textContent = `Tool: ${toolName}`; 
     statusSizeEl.textContent = `Size: ${brushSize.value}px`;
 }
 
