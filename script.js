@@ -113,7 +113,7 @@ function showUnavailableToolMessage(toolName) {
     const message = document.createElement('p');
     message.id = 'unavailable-tool-message';
     message.className = 'tool-warning';
-    message.textContent = `The "${toolName}" tool is not implemented yet.`;
+    message.textContent = 'you thought this was ms paint??';
 
     document.body.appendChild(message);
 
