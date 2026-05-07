@@ -1,3 +1,9 @@
+function createHeader() {
+    const header = document.getElementById('top');
+    header.textContent = 'Super Scuffed Paint';
+    
+}
+createHeader();
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -98,6 +104,25 @@ function getActiveTool() {
     return null;
 }
 
+function showUnavailableToolMessage(toolName) {
+    const existing = document.getElementById('unavailable-tool-message');
+    if (existing) {
+        existing.remove();
+    }
+
+    const message = document.createElement('p');
+    message.id = 'unavailable-tool-message';
+    message.className = 'tool-warning';
+    message.textContent = `The "${toolName}" tool is not implemented yet.`;
+
+    document.body.appendChild(message);
+
+    setTimeout(() => {
+        const currentMessage = document.getElementById('unavailable-tool-message');
+        if (currentMessage) currentMessage.remove();
+    }, 3000);
+}
+
 const statusbar = document.getElementById('statusbar');
 statusbar.innerHTML = '';
 
@@ -133,6 +158,10 @@ toolButtons.forEach(btn => {
         const toolName = btn.dataset.tool;
 
         if (['save', 'load', 'resize', 'reset', 'save-as'].includes(toolName)) return;
+        if (['line', 'rectangle', 'circle'].includes(toolName)) {
+            showUnavailableToolMessage(toolName);
+            return;
+        }
 
         currentTool = toolName;
         toolButtons.forEach(b => b.classList.remove('active'));
